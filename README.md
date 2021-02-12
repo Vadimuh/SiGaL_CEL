@@ -1,1 +1,1 @@
-# SiGaL_Cell
+# SiGaL_CEL
