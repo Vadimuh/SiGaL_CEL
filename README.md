@@ -97,4 +97,5 @@ Currently we need to have work done on all of the parts of the project. This inc
 In the `lib` directory, we have the `web` subdirectory. This is where you'll find the HTML/CSS/JS source code. Since this site is a single-page application, you'll only find a single index.html file, along with a single styles.css file, but multiple JS source files.
 
 ### Contributing to the Back End.
-Our elixir source code is directly inside of the `lib` directory. 
+Our elixir source code is directly inside of the `lib` directory.
+If dependencies need to be added or modified, you would modify mix.exs
