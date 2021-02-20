@@ -1,12 +1,22 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="lib/web/styles.css">
-    <script type="text/javascript" src="lib/web/script.js" defer></script>
-  </head>
-  <body>
-    <p>Chat with others below!</p>
-    <textarea rows="8" cols="80" style="border: solid black;"></textarea>
-  </body>
+<html>
+	<head>
+		<!--uses the script.js and styles.css-->
+		<script type="text/javascript" src="script.js" defer></script>
+		<link rel="stylesheet" type="text/css" href="styles.css">
+	</head>
+	<body>
+		<div id = "banner">
+			<h1>
+				Sigal.io
+			</h1>
+		</div>	
+		<p id = "description">
+			Sigal.io is a site where you can create and join and create lobbies with your favorite board games. More description here.
+			Once you enter a nickname and click submit, you can either
+			look for a lobby that someone has created through a game ID or create your own lobby. To set up a lobby, you will need to upload game code and also enter a description.  
+		</p>
+		<input id="nickname">
+		<button onclick = "submitName()" id = "submit">Submit</button>
+	</body>
 </html>
