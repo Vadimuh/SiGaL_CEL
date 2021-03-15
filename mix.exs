@@ -26,6 +26,10 @@ defmodule SiteEx.MixProject do
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
 
 
+      #For Database usage
+      {:ecto_sql, "~> 3.4"},
+      {:postgrex, ">= 0.0.0"},
+
       #:cowboy ~ the HTTP Server
       {:cowboy, "~> 2.4"},
 

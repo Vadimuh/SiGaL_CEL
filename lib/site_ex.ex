@@ -7,6 +7,9 @@ defmodule SiteEx do
 
   def start(_type, _args) do
     children = [
+
+      Lobbies.Repo,
+
       Plug.Cowboy.child_spec(
 
         #:scheme is set to :http for local development

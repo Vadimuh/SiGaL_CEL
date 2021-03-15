@@ -2,7 +2,8 @@ defmodule SiteEx.SocketHandler do
   @behaviour :cowboy_websocket
 
   def init(request, _state) do
-    state = %{registry_key: request.path}
+    state = %{registry_key: request.path, rand_id: :rand.uniform(1000)}
+    IO.puts "New Websocket Process #{state[:rand_id]}"
 
     {:cowboy_websocket, request, state}
   end
@@ -31,6 +32,7 @@ defmodule SiteEx.SocketHandler do
   end
 
   def websocket_info(info, state) do
+    IO.puts state[:rand_id]
     {:reply, {:text, info}, state}
   end
 end
