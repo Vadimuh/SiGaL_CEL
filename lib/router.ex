@@ -39,14 +39,14 @@ defmodule SiteEx.Router do
     |> send_resp(200, "{\"result\": \"success\"}")
   end
 
-  get "/lobby" do
+  get "/lobbies" do
     conn
     |> put_resp_header("content-type", "text/html; charset=utf-8")
-    |> send_file(200, "lib/web/lobbies.html")
+    |> send_file(200, "lib/web/p_lobbies.html") #NOTE: this is using prototype lobbies
   end
 
   #------Chat Connection------
-  get "/chat" do
+  get "/lobby" do
     send_resp(conn, 200, application_html())
   end
   #---------------------------
