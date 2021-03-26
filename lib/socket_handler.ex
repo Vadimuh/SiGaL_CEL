@@ -4,6 +4,7 @@ defmodule SiteEx.SocketHandler do
   def init(request, _state) do
     state = %{registry_key: request.path, rand_id: :rand.uniform(1000)}
     IO.puts "New Websocket Process #{state[:rand_id]}"
+    IO.puts "User joins lobby #{request.path}"
 
     {:cowboy_websocket, request, state}
   end
