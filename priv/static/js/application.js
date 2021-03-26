@@ -1,37 +1,40 @@
+
+let randLobby = Math.floor(Math.random() * 2);
+
 (() => {
     class WebsocketHandler {
-        setupSocket() {
-            this.socket = new WebSocket("ws://localhost:8000/ws/chat")
+        setupSocket(randLobby) {
+            this.socket = new WebSocket("ws://localhost:8000/ws/lobby/" + randLobby);
 
             this.socket.addEventListener("message" , (event) => {
-                const pTag = document.createElement("p")
-                pTag.innerHTML = event.data
+                const pTag = document.createElement("p");
+                pTag.innerHTML = event.data;
 
-                document.getElementById("main").append(pTag)
-            })
+                document.getElementById("main").append(pTag);
+            });
 
             this.socket.addEventListener("close", () => {
-                this.setupSocket()
-            })
+                this.setupSocket(randLobby);
+            });
         }
 
         submit(event) {
-            event.preventDefault()
-            const input = document.getElementById("message")
-            const message = input.value
-            input.value = ""
+            event.preventDefault();
+            const input = document.getElementById("message");
+            const message = input.value;
+            input.value = "";
             
             this.socket.send(
                 JSON.stringify({
                     data: {message: message},
                 })
-            )
+            );
         }
     }
 
-    const WebsocketClass = new WebsocketHandler()
-    WebsocketClass.setupSocket()
+    const WebsocketClass = new WebsocketHandler();
+    WebsocketClass.setupSocket(randLobby);
 
     document.getElementById("button")
-        .addEventListener("click", (event) => WebsocketClass.submit(event))
+        .addEventListener("click", (event) => WebsocketClass.submit(event));
 })()
