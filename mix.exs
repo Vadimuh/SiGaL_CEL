@@ -37,6 +37,9 @@ defmodule SiteEx.MixProject do
       {:plug, "~> 1.7"},
       {:plug_cowboy, "~> 2.0"},
 
+      #:poison encodes and decodes JSON
+      {:poison, "~> 4.0"},
+
       #:jason ~ the JSON parser
       {:jason, "~> 1.1"}
     ]
