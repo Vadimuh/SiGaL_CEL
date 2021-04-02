@@ -1,4 +1,5 @@
 defmodule SiteEx.Router do
+  import Ecto.Query, only: [from: 2]
   use Plug.Router
 
 
@@ -45,9 +46,20 @@ defmodule SiteEx.Router do
     |> send_resp(200, "{\"result\": \"success\"}")
   end
 
-  get "lobby_list" do
+  get "/lobby_list" do
 
-    map = Lobbies.Repo.all Lobbies.Room
+    # map = Lobbies.Repo.all Lobbies.Room
+    # map = Lobbies.Repo.all (from r in Lobbies.Room, select: :lobbyname)
+
+    # [] creates a list
+    # map = Lobbies.Repo.all(from r in Lobbies.Room,
+    #   select: [r.lobbyname, r.lobbydesc])
+
+
+    map = Lobbies.Repo.all(from r in Lobbies.Room,
+      select: %{"lobbyname" => r.lobbyname,
+                "lobbydesc" => r.lobbydesc,
+                "id" => r.id})
 
     conn
     |> put_resp_content_type("application/json")

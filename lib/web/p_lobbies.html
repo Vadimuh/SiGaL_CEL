@@ -8,14 +8,28 @@
     	</title>
 	</head>
 	<body>
-		<div id = "nameBox">
+		<div id="nameBox">
 			<h1>
 				Welcome
 			</h1>
 		</div>
 
-		<table>
-		
+		<template id="temp">
+			<tr id="rowTemplate">
+				<td></td>
+				<td></td>
+				<td></td>
+				<td><button onclick="joinLobby(event)">Join Now</button></td>
+			</tr>
+		</template>
+
+		<table id="lobbiesTable">
+			<tr>
+				<th>Lobby Name</th>
+				<th>Lobby Description</th>
+				<th>Lobby ID</th>
+				<th></th>
+			</tr>
 		</table>
 	</body>
 </html>
