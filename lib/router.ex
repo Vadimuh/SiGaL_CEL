@@ -46,6 +46,51 @@ defmodule SiteEx.Router do
     |> send_resp(200, "{\"result\": \"success\"}")
   end
 
+  #registration for users
+  post "/register" do
+    nickname = conn.body_params["nickname"]
+    IO.puts "User wants to register Nickname: #{nickname}"
+
+    # UUID in the future
+    user_id = :rand.uniform(1000000)
+    map = %{"user_id" => user_id}
+    entry = %Lobbies.Users{id: user_id, nickname: nickname}
+
+    Lobbies.Repo.insert!(entry)
+
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(201, Poison.encode!(map))
+
+  end
+
+  #creating the lobby
+  post "/create_lobby" do
+    user_id = conn.body_params["user_id"]
+    lobbyname = conn.body_params["lobbyname"]
+    lobbydesc = conn.body_params["lobbydesc"]
+    gamecode = conn.body_params["gamecode"]
+    gamerules = conn.body_params["gamerules"]
+
+    user = Lobbies.Repo.get Lobbies.Users, user_id
+    nickname = user.nickname
+
+    lobby_id = :rand.uniform(1000000)
+    map = %{"lobby_id" => lobby_id}
+    entry = %Lobbies.Room{id: lobby_id, host_nickname: nickname, host_id: user_id,
+                          lobbyname: lobbyname, lobbydesc: lobbydesc,
+                          gamecode: gamecode, gamerules: gamerules,
+                          user_ids: [user_id], chatHistory: []}
+
+    Lobbies.Repo.insert!(entry)
+
+
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(201, Poison.encode!(map))
+
+  end
+
   get "/lobby_list" do
 
     # map = Lobbies.Repo.all Lobbies.Room
@@ -57,7 +102,8 @@ defmodule SiteEx.Router do
 
 
     map = Lobbies.Repo.all(from r in Lobbies.Room,
-      select: %{"lobbyname" => r.lobbyname,
+      select: %{"host_nickname" => r.host_nickname,
+                "lobbyname" => r.lobbyname,
                 "lobbydesc" => r.lobbydesc,
                 "id" => r.id})
 
@@ -77,28 +123,6 @@ defmodule SiteEx.Router do
     send_resp(conn, 200, application_html())
   end
   #---------------------------
-
-  # get "/hello/*glob" do
-  #   send_resp(conn, 200, "route after /hello: #{inspect glob}")
-  # end
-
-  # get "/lib/web/p_lobbylist.js" do
-  #   conn
-  #   |> put_resp_header("content-type", "text/javascript")
-  #   |> send_file(200, "lib/web/p_lobbylist.js")
-  # end
-
-  # get "/lib/web/script.js" do
-  #   conn
-  #   |> put_resp_header("content-type", "text/javascript")
-  #   |> send_file(200, "lib/web/script.js")
-  # end
-
-  # get "/lib/web/styles.css" do
-  #   conn
-  #   |> put_resp_header("content-type", "text/css")
-  #   |> send_file(200, "lib/web/styles.css")
-  # end
 
 
   match _ do
