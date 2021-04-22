@@ -3,6 +3,8 @@ defmodule Lobbies.Repo.Migrations.CreateLobbies do
 
   def change do
     create table(:room) do
+      add :host_nickname, :string
+      add :host_id, :integer
       add :lobbyname, :string
       add :lobbydesc, :string
       add :gamerules, :string
