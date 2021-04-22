@@ -12,10 +12,12 @@
 			<h1>
 				Welcome
 			</h1>
+			<button onclick="createRandomLobby()">Create Random Lobby</button> 
 		</div>
 
 		<template id="temp">
 			<tr id="rowTemplate">
+				<td></td>
 				<td></td>
 				<td></td>
 				<td></td>
@@ -25,6 +27,7 @@
 
 		<table id="lobbiesTable">
 			<tr>
+				<th>Host</th>
 				<th>Lobby Name</th>
 				<th>Lobby Description</th>
 				<th>Lobby ID</th>
