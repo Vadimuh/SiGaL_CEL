@@ -4,7 +4,7 @@ let randLobby = Math.floor(Math.random() * 2);
 (() => {
     class WebsocketHandler {
         setupSocket(randLobby) {
-            this.socket = new WebSocket("ws://localhost:8000/ws/lobby/" + randLobby);
+            this.socket = new WebSocket("ws://" + location.host + "/ws/lobby/" + randLobby);
 
             this.socket.addEventListener("message" , (event) => {
                 const pTag = document.createElement("p");
