@@ -8,9 +8,4 @@ defmodule Lobbies.Users do
     field :nickname, :string, unique: true
     timestamps()
   end
-
-
-
-
-
 end

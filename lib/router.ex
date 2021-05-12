@@ -24,7 +24,7 @@ defmodule SiteEx.Router do
     json_decoder: Jason
   plug :dispatch
 
-  EEx.function_from_file(:defp, :application_html, "lib/application.html.eex", [])
+  EEx.function_from_file(:defp, :application_html, "lib/web/application.html.eex", [])
 
 
 
@@ -91,6 +91,8 @@ defmodule SiteEx.Router do
 
   end
 
+  #Returns the data from Lobbies.Room
+  #Called in p_lobbies.js
   get "/lobby_list" do
 
     # map = Lobbies.Repo.all Lobbies.Room
