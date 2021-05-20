@@ -121,10 +121,16 @@ defmodule SiteEx.Router do
   end
 
   #------Chat Connection------
-  get "/lobby" do
-    send_resp(conn, 200, application_html())
-  end
+  # get "/lobby" do
+  #   send_resp(conn, 200, application_html())
+  # end
   #---------------------------
+
+  get "/lobby/*_" do
+    conn
+    |> put_resp_header("content-type", "text/html; charset=utf-8")
+    |> send_file(200, "lib/web/chat.html")
+  end
 
 
   match _ do
