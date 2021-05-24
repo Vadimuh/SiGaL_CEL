@@ -107,19 +107,20 @@ defmodule SiteEx.Router do
     |> send_resp(200, Poison.encode!(map))
   end
 
+  #group of lobbies
   get "/lobbies" do
     conn
     |> put_resp_header("content-type", "text/html; charset=utf-8")
     |> send_file(200, "lib/web/p_lobbies.html") #NOTE: this is using prototype lobbies
   end
 
-  #------Chat Connection------
+  #Specific lobby
   get "/lobby/*glob" do
     conn
     |> put_resp_header("content-type", "text/html; charset=utf-8")
-    |> send_file(200, "lib/web/chat.html")
+    |> send_file(200, "lib/web/p_lobby.html") #NOTE: p_lobby.html
   end
-  #---------------------------
+
 
   match _ do
     send_resp(conn, 404, "404 Error, Not Found!")
