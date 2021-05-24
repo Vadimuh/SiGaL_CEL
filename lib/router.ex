@@ -111,7 +111,7 @@ defmodule SiteEx.Router do
   get "/lobbies" do
     conn
     |> put_resp_header("content-type", "text/html; charset=utf-8")
-    |> send_file(200, "lib/web/p_lobbies.html") #NOTE: this is using prototype lobbies
+    |> send_file(200, "lib/web/p_lobbylist.html") #NOTE: this is using prototype lobbylist
   end
 
   #Specific lobby
