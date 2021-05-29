@@ -33,6 +33,11 @@ class Card {
         this.y += deltaY;
     }
 
+    setZone(zone){
+        this.zone = zone;
+        console.log('in Zone');
+    }
+
     rename(newName){
         this.name = newName;
     }
