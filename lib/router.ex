@@ -40,6 +40,7 @@ defmodule SiteEx.Router do
   end
 
   #registration for users
+  #called in script.js
   post "/register" do
     nickname = conn.body_params["nickname"]
     IO.puts "User wants to register Nickname: #{nickname}"
@@ -85,7 +86,7 @@ defmodule SiteEx.Router do
   end
 
   #Returns the data from Lobbies.Room
-  #Called in p_lobbies.js
+  #Called in p_lobbylist.js
   get "/lobby_list" do
 
     # map = Lobbies.Repo.all Lobbies.Room
