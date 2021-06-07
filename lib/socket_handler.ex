@@ -1,4 +1,5 @@
 defmodule SiteEx.SocketHandler do
+  import Ecto.Query, only: [from: 2]
   @behaviour :cowboy_websocket
 
   def init(request, _state) do
@@ -20,6 +21,26 @@ defmodule SiteEx.SocketHandler do
     Registry.SiteEx
     |> Registry.register(state.registry_key, {})
 
+    from(r in Lobbies.Room, where: r.id == ^state.registry_key,
+          update: [push: [nicknames: ^state.nickname]])
+    # |> Repo.update_all(push: [nicknames: state.nickname])
+
+    query_nicknames = from r in Lobbies.Room, select: r.nicknames
+    nicknames = Lobbies.Repo.get!(query_nicknames, state.registry_key)
+
+
+
+    memo = {:userjoin, state[:nickname]}
+
+    Registry.SiteEx
+    |> Registry.dispatch(state.registry_key, fn(entries) ->
+      for {pid, _} <- entries do
+        if pid != self() do
+          Process.send(pid, memo, [])
+        end
+      end
+    end)
+
     {:ok, state}
   end
 
@@ -37,7 +58,18 @@ defmodule SiteEx.SocketHandler do
       end
     end)
 
-    {:reply, {:text, message}, state}
+    response = %{action: "chat_update",
+                data: %{nickname: state.nickname, message: message} }
+
+    {:reply, {:text, Poison.encode!(response)}, state}
+  end
+
+  def websocket_terminate(_reason, _req, state) do
+
+    from(r in Lobbies.Room, where: r.id == ^state.registry_key,
+    update: [pull: [nicknames: ^state.nickname]])
+
+    {:ok, state}
   end
 
   def websocket_info(info, state) do
@@ -46,7 +78,11 @@ defmodule SiteEx.SocketHandler do
     # {:reply, {:text, data}, state}
 
     case info do
-      {:chat, {message, nickname}} -> {:reply, {:text, "#{nickname}: #{message}"}, state}
+      {:chat, {message, nickname}} ->
+        response = %{action: "chat_update",
+                    data: %{nickname: nickname, message: message} }
+
+        {:reply, {:text, Poison.encode!(response)}, state}
       _ -> {:ok, state}
     end
   end

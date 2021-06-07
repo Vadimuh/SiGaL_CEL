@@ -8,6 +8,7 @@ defmodule Lobbies.Room do
     field :lobbydesc, :string
     field :gamerules, :string
     field :gamecode, :string
+    field :nicknames, {:array, :string}
     field :user_ids, {:array, :integer}
     field :chatHistory, {:array, :map}
     timestamps()

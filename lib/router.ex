@@ -74,7 +74,7 @@ defmodule SiteEx.Router do
     entry = %Lobbies.Room{id: lobby_id, host_nickname: nickname, host_id: user_id,
                           lobbyname: lobbyname, lobbydesc: lobbydesc,
                           gamecode: gamecode, gamerules: gamerules,
-                          user_ids: [user_id], chatHistory: []}
+                          nicknames: [], user_ids: [user_id], chatHistory: []}
 
     Lobbies.Repo.insert!(entry)
 

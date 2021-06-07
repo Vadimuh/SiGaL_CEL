@@ -9,6 +9,7 @@ defmodule Lobbies.Repo.Migrations.CreateLobbies do
       add :lobbydesc, :string
       add :gamerules, :string
       add :gamecode, :string
+      add :nicknames, {:array, :string}
       add :user_ids, {:array, :integer}
       add :chatHistory, {:array, :map}
 
