@@ -5,21 +5,25 @@ let ctx = canv.getContext("2d");
 let zones = [];
 let cards = [];
 const placingModes = {
-    NONE: 0,
+    SELECT: 0,
     ZONE: 1,
     CARD: 2,
     PLAYER: 3
 }
 
-let currentMode = placingModes.NONE;
+let currentMode = placingModes.SELECT;
 let currentCard; //current card dragging
+
+//starting board
+ctx.fillStyle = "#FEE7E2";
+ctx.fillRect(0,0, 800, 600);
 
 //Keyboard inputs
 document.addEventListener('keydown', e => {
     switch(e.key){
-        case ' ':
-            console.log('space key pressed');
-            currentMode = placingModes.NONE;
+        case 'Escape':
+            console.log('escape key pressed');
+            currentMode = placingModes.SELECT;
             redrawEverything();
             break;
         case 'q': //q
@@ -63,7 +67,7 @@ function mouseDownHandler(event){
     mouseMoveX = x;
     mouseMoveY = y;
     switch(currentMode){
-        case placingModes.NONE:
+        case placingModes.SELECT:
             for(let i = cards.length-1; i >= 0; i--){
                 let card = cards[i];
                 if(card.isClickedOn(mouseDownX,mouseDownY)){
@@ -95,7 +99,7 @@ function mouseUpHandler(event){
     let x = event.clientX - rect.left;
     let y = event.clientY - rect.top;
     switch(currentMode){
-        case placingModes.NONE:
+        case placingModes.SELECT:
             currentCard = undefined;
             break;
         case placingModes.ZONE:
@@ -128,9 +132,16 @@ function mouseMoveHandler(event){
     mouseMoveX = x;
     mouseMoveY = y;
     switch(currentMode){
-        case placingModes.NONE:
+        case placingModes.SELECT:
             if(currentCard !== undefined){
                 currentCard.translate(mouseXDelta,mouseYDelta);
+                //check if card is every zone
+                for(let i = 0; i < zones.length; i++){
+                    let zone = zones[i];
+                    if(isColliding(zone, currentCard)){
+                        currentCard.setZone(zone);
+                    }
+                }
             }
             break;
         case placingModes.ZONE:
@@ -158,8 +169,8 @@ function mouseMoveHandler(event){
 function redrawEverything(){
     let tempFillStyle = ctx.fillStyle;
     //draw background
-    ctx.fillStyle = "#FFFFFF";
-    ctx.fillRect(0,0, 500, 500);
+    ctx.fillStyle = "#FEE7E2";
+    ctx.fillRect(0,0, 800, 600);
     //draw zones
     ctx.fillStyle = "#AAAAAA";
     for(let i = 0; i < zones.length; i++){
@@ -176,26 +187,69 @@ function redrawEverything(){
     ctx.fillStyle = "#000000";
     ctx.font = "20px Georgia";
     switch(currentMode){
-        case placingModes.NONE:
-            ctx.fillText("NONE MODE", 10, 50);
+        case placingModes.SELECT:
+            ctx.fillText("SELECT MODE", 10, 50);
+            ctx.fillStyle = "#D1B397"; 
+            ctx.fillRect(590,10,200,100);
+            ctx.fillStyle = "#000000";
+            ctx.font = "20px Georgia";
+            ctx.fillText("Editor", 660, 30);
+            ctx.fillText("Create Zone (Q)", 600, 55);
+            ctx.fillText("Create Card (W)", 600, 75);
+            ctx.fillText("Create Zone (E)", 600, 95);
             break;
         case placingModes.ZONE:
             ctx.fillText("ZONE MODE", 10, 50);
+            ctx.fillStyle = "#D1B397"; 
+            ctx.fillRect(590,10,200,100);
+            ctx.fillStyle = "#000000";
+            ctx.font = "20px Georgia";
+            ctx.fillText("Editor", 660, 30);
+            ctx.fillStyle = "#FFFFFF"; 
+            ctx.fillRect(590, 35,200,50);
+            ctx.fillStyle = "#000000";
+            ctx.font = "20px Georgia";
+            ctx.fillText("Create Zone (Q)", 600, 55);
+            ctx.fillText("Create Card (W)", 600, 75);
+            ctx.fillText("Create Zone (E)", 600, 95);
             break;
         case placingModes.CARD:   
             ctx.fillText("CARD MODE", 10, 50);
+            ctx.fillStyle = "#D1B397"; 
+            ctx.fillRect(590,10,200,100);
+            ctx.fillStyle = "#000000";
+            ctx.font = "20px Georgia";
+            ctx.fillText("Editor", 660, 30);
+            ctx.fillText("Create Zone (Q)", 600, 55);
+            ctx.fillText("Create Card (W)", 600, 75);
+            ctx.fillText("Create Zone (E)", 600, 95);
             break;
         case placingModes.PLAYER:
             ctx.fillText("PLAYER MODE", 10, 50);
+            ctx.fillStyle = "#D1B397"; 
+            ctx.fillRect(590,10,200,100);
+            ctx.fillStyle = "#000000";
+            ctx.font = "20px Georgia";
+            ctx.fillText("Editor", 660, 30);
+            ctx.fillText("Create Zone (Q)", 600, 55);
+            ctx.fillText("Create Card (W)", 600, 75);
+            ctx.fillText("Create Zone (E)", 600, 95);
             break;
     }
     ctx.fillStyle = tempFillStyle;
 }
 
+//Axis-Aligned Bounding Box collision for zones and cards
+//could work for any rectangles really but not necessary rn
+function isColliding(zone, card){
+    if (zone.x < card.x + card.width &&
+        zone.x + zone.width > card.x &&
+        zone.y < card.y + card.height &&
+        zone.y + zone.height > card.y) {
+        return true;
+    }
+}
 
-
-// ctx.fillStyle = "#60C45E"; 
-// ctx.fillRect(100,200,200,100);
 // ctx.beginPath();
 // ctx.moveTo(50,50);
 // ctx.lineTo(100,75);
