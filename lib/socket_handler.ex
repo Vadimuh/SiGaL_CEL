@@ -17,6 +17,19 @@ defmodule SiteEx.SocketHandler do
     {:cowboy_websocket, request, state}
   end
 
+
+  def propagate_memo(memo, state) do
+    Registry.SiteEx
+    |> Registry.dispatch(state.registry_key, fn(entries) ->
+      for {pid, _} <- entries do
+        if pid != self() do
+          Process.send(pid, memo, [])
+        end
+      end
+    end)
+  end
+
+
   def websocket_init(state) do
     Registry.SiteEx
     |> Registry.register(state.registry_key, {})
@@ -27,62 +40,61 @@ defmodule SiteEx.SocketHandler do
 
     query_nicknames = from r in Lobbies.Room, select: r.nicknames
     nicknames = Lobbies.Repo.get!(query_nicknames, state.registry_key)
-
-
+    IO.puts nicknames
 
     memo = {:userjoin, state[:nickname]}
-
-    Registry.SiteEx
-    |> Registry.dispatch(state.registry_key, fn(entries) ->
-      for {pid, _} <- entries do
-        if pid != self() do
-          Process.send(pid, memo, [])
-        end
-      end
-    end)
+    propagate_memo(memo, state)
 
     {:ok, state}
   end
+
 
   def websocket_handle({:text, json}, state) do
     payload = Jason.decode!(json)
-    message = payload["data"]["message"]
-    memo = {:chat, {message, state[:nickname]}}
+    action = payload["action"]
+    data = payload["data"]
 
-    Registry.SiteEx
-    |> Registry.dispatch(state.registry_key, fn(entries) ->
-      for {pid, _} <- entries do
-        if pid != self() do
-          Process.send(pid, memo, [])
-        end
-      end
-    end)
+    case action do
+      "chat" ->
+        memo = {:chat, {data, state[:nickname]}}
+        propagate_memo(memo, state)
 
-    response = %{action: "chat_update",
-                data: %{nickname: state.nickname, message: message} }
+        response = %{action: "chat_update",
+                data: %{nickname: state.nickname, message: data} }
 
-    {:reply, {:text, Poison.encode!(response)}, state}
+        {:reply, {:text, Poison.encode!(response)}, state}
+
+      _ -> {:ok, state}
+    end
   end
 
-  def websocket_terminate(_reason, _req, state) do
-
+  def terminate(_reason, _req, state) do
+    IO.puts "User #{state.nickname} has left"
     from(r in Lobbies.Room, where: r.id == ^state.registry_key,
     update: [pull: [nicknames: ^state.nickname]])
+    memo = {:userleft, state[:nickname]}
+    propagate_memo(memo, state)
 
-    {:ok, state}
+    # {:ok, state}
+    :ok
   end
 
   def websocket_info(info, state) do
-    # {action, data} = info
-    # IO.puts "Websocket Info Invoked for #{state[:rand_id]} Received: \"#{action}\" \"#{data}\" "
-    # {:reply, {:text, data}, state}
 
     case info do
+      {:userjoin, nickname} ->
+        notify = %{action: "user_join", data: nickname}
+        {:reply, {:text, Poison.encode!(notify)}, state}
+
+      {:userleft, nickname} ->
+        notify = %{action: "user_left", data: nickname}
+        {:reply, {:text, Poison.encode!(notify)}, state}
+
       {:chat, {message, nickname}} ->
-        response = %{action: "chat_update",
+        notify = %{action: "chat_update",
                     data: %{nickname: nickname, message: message} }
 
-        {:reply, {:text, Poison.encode!(response)}, state}
+        {:reply, {:text, Poison.encode!(notify)}, state}
       _ -> {:ok, state}
     end
   end
