@@ -4,13 +4,16 @@ class Zone {
         this.y = y;
         this.height = height;
         this.width = width;
-        this.name = name;
+        this.name = 'Zone Name';
         this.cards = [];
     }
 
     draw(ctx){
         ctx.fillStyle = "#AAAAAA";
         ctx.fillRect(this.x, this.y, this.width, this.height);
+        ctx.fillStyle = "#000000";
+        ctx.font = "20px Georgia";
+        ctx.fillText(this.name, this.x, this.y);
     }
 
     move(newX, newY){
