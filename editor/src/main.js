@@ -13,6 +13,7 @@ const placingModes = {
 
 let currentMode = placingModes.SELECT;
 let currentCard; //current card dragging
+let currentZone; //current zone viewing
 
 //starting board
 ctx.fillStyle = "#FEE7E2";
@@ -56,6 +57,7 @@ canv.addEventListener("mousedown", mouseDownHandler);
 canv.addEventListener("mouseup", mouseUpHandler);
 canv.addEventListener("mousemove", mouseMoveHandler);
 
+
 function mouseDownHandler(event){   
     mouseDown = true;
     console.log("Mouse down");
@@ -68,15 +70,29 @@ function mouseDownHandler(event){
     mouseMoveY = y;
     switch(currentMode){
         case placingModes.SELECT:
-            for(let i = cards.length-1; i >= 0; i--){
-                let card = cards[i];
-                if(card.isClickedOn(mouseDownX,mouseDownY)){
-                    currentCard = card;
-                    break;
+            for(let i = zones.length-1; i >= 0; i--){
+                let zone = zones[i];
+                if (mouseDownX < zone.x + zone.width &&
+                    mouseDownX > zone.x &&
+                    mouseDownY < zone.y + zone.height &&
+                    mouseDownY > zone.y) {
+                        currentZone = zone;
+                        break;
                 }
             }
-            break;
+            for(let j = cards.length-1; j >= 0; j--){
+                let card = cards[j];
+                if (mouseDownX < card.x + card.width &&
+                    mouseDownX > card.x &&
+                    mouseDownY < card.y + card.height &&
+                    mouseDownY > card.y) {
+                        currentCard = card;
+                        break;
+                }
+            }
         case placingModes.ZONE:
+            //prevent zones from overlapping
+
             break;
         case placingModes.CARD:   
             ctx.fillText("CARD MODE", 10, 50);
@@ -166,8 +182,14 @@ function mouseMoveHandler(event){
     }
 }
 
+function drawZone(){
+    ctx.fillStyle = "#FEE7E2";
+    ctx.fillRect(0,0, 800, 600);
+}
+
 function redrawEverything(){
     let tempFillStyle = ctx.fillStyle;
+    ctx.clearRect(0, 0, 800, 600);
     //draw background
     ctx.fillStyle = "#FEE7E2";
     ctx.fillRect(0,0, 800, 600);
@@ -188,52 +210,128 @@ function redrawEverything(){
     ctx.font = "20px Georgia";
     switch(currentMode){
         case placingModes.SELECT:
+            //editor window
             ctx.fillText("SELECT MODE", 10, 50);
             ctx.fillStyle = "#D1B397"; 
+            //actual box
             ctx.fillRect(590,10,200,100);
+            ctx.lineWidth = 3;
+            ctx.rect(590,10,200,100);
+            ctx.setLineDash([]);
+            ctx.stroke();
+            //separating boxes
+            ctx.fillStyle = "#000000";
+            ctx.lineWidth = 3;
+            ctx.rect(765,10,25,25);
+            ctx.stroke();
+            ctx.rect(590,35,200,1);
+            ctx.stroke();
+            ctx.rect(590,60,200,1);
+            ctx.stroke();
+            ctx.rect(590,85,200,1);
+            ctx.stroke();
+            //text
             ctx.fillStyle = "#000000";
             ctx.font = "20px Georgia";
-            ctx.fillText("Editor", 660, 30);
+            ctx.fillText("Editor", 610, 30);
             ctx.fillText("Create Zone (Q)", 600, 55);
-            ctx.fillText("Create Card (W)", 600, 75);
-            ctx.fillText("Create Zone (E)", 600, 95);
+            ctx.fillText("Create Card (W)", 600, 80);
+            ctx.fillText("Create Player (E)", 600, 105);
             break;
         case placingModes.ZONE:
+            //editor window
             ctx.fillText("ZONE MODE", 10, 50);
             ctx.fillStyle = "#D1B397"; 
+            //actual box
             ctx.fillRect(590,10,200,100);
+            ctx.lineWidth = 3;
+            ctx.rect(590,10,200,100);
+            ctx.setLineDash([]);
+            ctx.stroke();
+            //separating boxes
             ctx.fillStyle = "#000000";
+            ctx.lineWidth = 3;
+            ctx.rect(765,10,25,25);
+            ctx.stroke();
+            ctx.rect(590,35,200,1);
+            ctx.stroke();
+            ctx.rect(590,60,200,1);
+            ctx.stroke();
+            ctx.rect(590,85,200,1);
+            ctx.stroke();
+            //text and selection
             ctx.font = "20px Georgia";
-            ctx.fillText("Editor", 660, 30);
+            ctx.fillText("Editor", 610, 30);
             ctx.fillStyle = "#FFFFFF"; 
-            ctx.fillRect(590, 35,200,50);
+            ctx.fillRect(590, 38,200,20);
             ctx.fillStyle = "#000000";
             ctx.font = "20px Georgia";
             ctx.fillText("Create Zone (Q)", 600, 55);
-            ctx.fillText("Create Card (W)", 600, 75);
-            ctx.fillText("Create Zone (E)", 600, 95);
+            ctx.fillText("Create Card (W)", 600, 80);
+            ctx.fillText("Create Player (E)", 600, 105);
             break;
         case placingModes.CARD:   
+            //editor window
             ctx.fillText("CARD MODE", 10, 50);
             ctx.fillStyle = "#D1B397"; 
+            //actual box
             ctx.fillRect(590,10,200,100);
+            ctx.lineWidth = 3;
+            ctx.rect(590,10,200,100);
+            ctx.setLineDash([]);
+            ctx.stroke();
+            //separating boxes
+            ctx.fillStyle = "#000000";
+            ctx.lineWidth = 3;
+            ctx.rect(765,10,25,25);
+            ctx.stroke();
+            ctx.rect(590,35,200,1);
+            ctx.stroke();
+            ctx.rect(590,60,200,1);
+            ctx.stroke();
+            ctx.rect(590,85,200,1);
+            ctx.stroke();
+            //text and selection
+            ctx.font = "20px Georgia";
+            ctx.fillText("Editor", 610, 30);
+            ctx.fillStyle = "#FFFFFF"; 
+            ctx.fillRect(590, 63,200,20);
             ctx.fillStyle = "#000000";
             ctx.font = "20px Georgia";
-            ctx.fillText("Editor", 660, 30);
             ctx.fillText("Create Zone (Q)", 600, 55);
-            ctx.fillText("Create Card (W)", 600, 75);
-            ctx.fillText("Create Zone (E)", 600, 95);
+            ctx.fillText("Create Card (W)", 600, 80);
+            ctx.fillText("Create Player (E)", 600, 105);
             break;
         case placingModes.PLAYER:
+            //editor window
             ctx.fillText("PLAYER MODE", 10, 50);
             ctx.fillStyle = "#D1B397"; 
+            //actual box
             ctx.fillRect(590,10,200,100);
+            ctx.lineWidth = 3;
+            ctx.rect(590,10,200,100);
+            ctx.stroke();
+            //separating boxes
+            ctx.fillStyle = "#000000";
+            ctx.lineWidth = 3;
+            ctx.rect(765,10,25,25);
+            ctx.stroke();
+            ctx.rect(590,35,200,1);
+            ctx.stroke();
+            ctx.rect(590,60,200,1);
+            ctx.stroke();
+            ctx.rect(590,85,200,1);
+            ctx.stroke();
+            //text and selection
+            ctx.font = "20px Georgia";
+            ctx.fillText("Editor", 610, 30);
+            ctx.fillStyle = "#FFFFFF"; 
+            ctx.fillRect(590, 88,200,20);
             ctx.fillStyle = "#000000";
             ctx.font = "20px Georgia";
-            ctx.fillText("Editor", 660, 30);
             ctx.fillText("Create Zone (Q)", 600, 55);
-            ctx.fillText("Create Card (W)", 600, 75);
-            ctx.fillText("Create Zone (E)", 600, 95);
+            ctx.fillText("Create Card (W)", 600, 80);
+            ctx.fillText("Create Player (E)", 600, 105);
             break;
     }
     ctx.fillStyle = tempFillStyle;
