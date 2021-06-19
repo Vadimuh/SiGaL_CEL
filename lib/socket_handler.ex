@@ -1,4 +1,5 @@
 defmodule SiteEx.SocketHandler do
+  import Ecto.Query, only: [from: 2]
   @behaviour :cowboy_websocket
 
   def init(request, _state) do
@@ -16,18 +17,8 @@ defmodule SiteEx.SocketHandler do
     {:cowboy_websocket, request, state}
   end
 
-  def websocket_init(state) do
-    Registry.SiteEx
-    |> Registry.register(state.registry_key, {})
 
-    {:ok, state}
-  end
-
-  def websocket_handle({:text, json}, state) do
-    payload = Jason.decode!(json)
-    message = payload["data"]["message"]
-    memo = {:chat, {message, state[:nickname]}}
-
+  def propagate_memo(memo, state) do
     Registry.SiteEx
     |> Registry.dispatch(state.registry_key, fn(entries) ->
       for {pid, _} <- entries do
@@ -36,17 +27,74 @@ defmodule SiteEx.SocketHandler do
         end
       end
     end)
+  end
 
-    {:reply, {:text, message}, state}
+
+  def websocket_init(state) do
+    Registry.SiteEx
+    |> Registry.register(state.registry_key, {})
+
+    from(r in Lobbies.Room, where: r.id == ^state.registry_key,
+          update: [push: [nicknames: ^state.nickname]])
+    # |> Repo.update_all(push: [nicknames: state.nickname])
+
+    query_nicknames = from r in Lobbies.Room, select: r.nicknames
+    nicknames = Lobbies.Repo.get!(query_nicknames, state.registry_key)
+    IO.puts nicknames
+
+    memo = {:userjoin, state[:nickname]}
+    propagate_memo(memo, state)
+
+    {:ok, state}
+  end
+
+
+  def websocket_handle({:text, json}, state) do
+    payload = Jason.decode!(json)
+    action = payload["action"]
+    data = payload["data"]
+
+    case action do
+      "chat" ->
+        memo = {:chat, {data, state[:nickname]}}
+        propagate_memo(memo, state)
+
+        response = %{action: "chat_update",
+                data: %{nickname: state.nickname, message: data} }
+
+        {:reply, {:text, Poison.encode!(response)}, state}
+
+      _ -> {:ok, state}
+    end
+  end
+
+  def terminate(_reason, _req, state) do
+    IO.puts "User #{state.nickname} has left"
+    from(r in Lobbies.Room, where: r.id == ^state.registry_key,
+    update: [pull: [nicknames: ^state.nickname]])
+    memo = {:userleft, state[:nickname]}
+    propagate_memo(memo, state)
+
+    # {:ok, state}
+    :ok
   end
 
   def websocket_info(info, state) do
-    # {action, data} = info
-    # IO.puts "Websocket Info Invoked for #{state[:rand_id]} Received: \"#{action}\" \"#{data}\" "
-    # {:reply, {:text, data}, state}
 
     case info do
-      {:chat, {message, nickname}} -> {:reply, {:text, "#{nickname}: #{message}"}, state}
+      {:userjoin, nickname} ->
+        notify = %{action: "user_join", data: nickname}
+        {:reply, {:text, Poison.encode!(notify)}, state}
+
+      {:userleft, nickname} ->
+        notify = %{action: "user_left", data: nickname}
+        {:reply, {:text, Poison.encode!(notify)}, state}
+
+      {:chat, {message, nickname}} ->
+        notify = %{action: "chat_update",
+                    data: %{nickname: nickname, message: message} }
+
+        {:reply, {:text, Poison.encode!(notify)}, state}
       _ -> {:ok, state}
     end
   end
