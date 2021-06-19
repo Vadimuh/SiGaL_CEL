@@ -70,16 +70,6 @@ function mouseDownHandler(event){
     mouseMoveY = y;
     switch(currentMode){
         case placingModes.SELECT:
-            for(let i = zones.length-1; i >= 0; i--){
-                let zone = zones[i];
-                if (mouseDownX < zone.x + zone.width &&
-                    mouseDownX > zone.x &&
-                    mouseDownY < zone.y + zone.height &&
-                    mouseDownY > zone.y) {
-                        currentZone = zone;
-                        break;
-                }
-            }
             for(let j = cards.length-1; j >= 0; j--){
                 let card = cards[j];
                 if (mouseDownX < card.x + card.width &&
@@ -117,18 +107,33 @@ function mouseUpHandler(event){
     switch(currentMode){
         case placingModes.SELECT:
             currentCard = undefined;
+            for(let i = zones.length-1; i >= 0; i--){
+                let zone = zones[i];
+                if (mouseDownX < zone.x + zone.width &&
+                    mouseDownX > zone.x &&
+                    mouseDownY < zone.y + zone.height &&
+                    mouseDownY > zone.y) {
+                        currentZone = zone;
+                        //user input name
+                        let nameInput = document.createElement("INPUT");
+                        nameInput.style.position = 'absolute';
+                        nameInput.style.left = zone.x + 'px';
+                        nameInput.style.top = zone.y +'px';
+                        document.body.appendChild(nameInput);
+                        break;
+                }
+            }
             break;
         case placingModes.ZONE:
             mouseDown = false;
             //give name to zone?
             //add zone to list
             let zone = new Zone(mouseDownX, mouseDownY, x-mouseDownX, y-mouseDownY);
-            zone.draw(ctx)
             zones.push(zone);
             redrawEverything();
             break;
-        case placingModes.CARD:   
-            
+        case placingModes.CARD: 
+            //change card stats
             break;
         case placingModes.PLAYER:
             ctx.fillText("PLAYER MODE", 10, 50);
@@ -197,7 +202,7 @@ function redrawEverything(){
     ctx.fillStyle = "#AAAAAA";
     for(let i = 0; i < zones.length; i++){
         let zone = zones[i];
-        ctx.fillRect(zone.x, zone.y, zone.width, zone.height);
+        zone.draw(ctx);
     }
     //draw cards
     //ctx.fillStyle = "#AAAAAA";
