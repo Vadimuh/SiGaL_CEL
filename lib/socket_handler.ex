@@ -34,18 +34,24 @@ defmodule SiteEx.SocketHandler do
     Registry.SiteEx
     |> Registry.register(state.registry_key, {})
 
-    from(r in Lobbies.Room, where: r.id == ^state.registry_key,
-          update: [push: [nicknames: ^state.nickname]])
-    # |> Repo.update_all(push: [nicknames: state.nickname])
+    IO.puts "Attempting to add nickname to array: '#{state.nickname}'"
+    IO.puts "Adding the nickname to Room with ID: '#{state.registry_key}'"
+
+    from(r in Lobbies.Room, where: r.id == ^state.registry_key)
+    |> Lobbies.Repo.update_all(push: [nicknames: state.nickname])
 
     query_nicknames = from r in Lobbies.Room, select: r.nicknames
     nicknames = Lobbies.Repo.get!(query_nicknames, state.registry_key)
     IO.puts nicknames
 
+    notify = %{action: "get_nicknames",
+               data: nicknames}
+
     memo = {:userjoin, state[:nickname]}
     propagate_memo(memo, state)
 
-    {:ok, state}
+    # {:ok, state}
+    {:reply, {:text, Poison.encode!(notify)}, state}
   end
 
 
@@ -70,8 +76,10 @@ defmodule SiteEx.SocketHandler do
 
   def terminate(_reason, _req, state) do
     IO.puts "User #{state.nickname} has left"
-    from(r in Lobbies.Room, where: r.id == ^state.registry_key,
-    update: [pull: [nicknames: ^state.nickname]])
+
+    from(r in Lobbies.Room, where: r.id == ^state.registry_key)
+    |> Lobbies.Repo.update_all(pull: [nicknames: state.nickname])
+
     memo = {:userleft, state[:nickname]}
     propagate_memo(memo, state)
 
