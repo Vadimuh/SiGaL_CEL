@@ -13,7 +13,7 @@ class Zone {
         ctx.fillRect(this.x, this.y, this.width, this.height);
         ctx.fillStyle = "#000000";
         ctx.font = "20px Georgia";
-        ctx.fillText(this.name, this.x, this.y);
+        ctx.fillText(this.name, this.x, this.y -  5);
     }
 
     move(newX, newY){

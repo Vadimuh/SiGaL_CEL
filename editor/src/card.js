@@ -6,8 +6,8 @@ class Card {
     constructor(x, y, width, height, imageURL){
         this.x = x;
         this.y = y;
-        this.height = height;
         this.width = width;
+        this.height = height;
         //this.name = name;
         //this.angle = angle;
         this.imageElem = document.createElement('img');
@@ -45,4 +45,10 @@ class Card {
     isClickedOn(mouseDownX, mouseDownY){
         return mouseDownX >= this.x && mouseDownY >= this.y && mouseDownX < this.x + this.width && mouseDownY < this.y + this.height;
     }
+
+    //show actions
+    showActions(){
+        
+    }
+    //add card to zone
 }

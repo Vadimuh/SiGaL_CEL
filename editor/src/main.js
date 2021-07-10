@@ -116,6 +116,16 @@ function mouseUpHandler(event){
                         currentZone = zone;
                         //user input name
                         let nameInput = document.createElement("INPUT");
+                        nameInput.addEventListener('keydown', e => {
+                            switch(e.key){
+                                case 'Enter':
+                                    console.log('enter key pressed');
+                                    //take in input
+                                    currentZone.rename(nameInput.value);
+                                    nameInput.remove();
+                                    break;
+                            }
+                        }, false);
                         nameInput.style.position = 'absolute';
                         nameInput.style.left = zone.x + 'px';
                         nameInput.style.top = zone.y +'px';
@@ -351,6 +361,45 @@ function isColliding(zone, card){
         zone.y + zone.height > card.y) {
         return true;
     }
+}
+
+function exportJSON(){
+    let json = '{';
+    // add zones
+    json += '{zones:'
+    for(let i = zones.length-1; i >= 0; i--){
+        let zone = zones[i];
+        json += 'x:' + zone.x;
+        json += 'y:' + zone.y;
+        json += 'width:' + zone.width;
+        json += 'height:' + zone.height;
+        json += 'name:' + zone.name;
+    }
+    json += '}';
+    // add cards
+    json += '{cards:'
+    for(let j = cards.length-1; j >= 0; j--){
+        let card = cards[j];
+        json += 'x:' + card.x;
+        json += 'y:' + card.y;
+        json += 'width:' + card.width;
+        json += 'height:' + card.height;
+        json += 'image:' + card.imageElem.src;
+        json += 'zone:' + card.zone;
+    }
+    json += '}';
+    
+    json += '}';
+    return json;
+}
+
+//parse json to get card details
+function importJSON(){
+
+    // add zones
+
+    // add cards
+    
 }
 
 // ctx.beginPath();
