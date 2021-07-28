@@ -8,6 +8,9 @@ defmodule SiteEx do
   def start(_type, _args) do
     children = [
 
+      #Timer for user/Lobby
+      Periodic,
+
       Lobbies.Repo,
 
       Plug.Cowboy.child_spec(

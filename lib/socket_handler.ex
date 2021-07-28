@@ -17,7 +17,6 @@ defmodule SiteEx.SocketHandler do
     {:cowboy_websocket, request, state}
   end
 
-
   def propagate_memo(memo, state) do
     Registry.SiteEx
     |> Registry.dispatch(state.registry_key, fn(entries) ->
@@ -101,8 +100,12 @@ defmodule SiteEx.SocketHandler do
       {:chat, {message, nickname}} ->
         notify = %{action: "chat_update",
                     data: %{nickname: nickname, message: message} }
-
         {:reply, {:text, Poison.encode!(notify)}, state}
+
+      {:ping} ->
+        IO.puts "I am websocket: #{state.rand_id}, and I approve of this message"
+        {:ok, state}
+
       _ -> {:ok, state}
     end
   end
