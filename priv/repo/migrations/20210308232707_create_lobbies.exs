@@ -31,6 +31,7 @@ defmodule Lobbies.Repo.Migrations.CreateLobbies do
       # add :id, :integer
       add :secret, :integer
       add :nickname, :string
+      add :lats, :naive_datetime
 
       timestamps()
     end

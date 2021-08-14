@@ -51,7 +51,11 @@ defmodule SiteEx.Router do
     # UUID in the future
     user_id = :rand.uniform(1000000)
     map = %{"user_id" => user_id}
-    entry = %Lobbies.Users{id: user_id, nickname: nickname}
+    cur_time = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+    # Make sure to update the lats otherwise they get deleted immediately after being created
+
+    entry = %Lobbies.Users{id: user_id, nickname: nickname, lats: cur_time}
 
     Lobbies.Repo.insert!(entry)
 

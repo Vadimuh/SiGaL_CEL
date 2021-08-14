@@ -58,6 +58,8 @@ defmodule SiteEx.SocketHandler do
     payload = Jason.decode!(json)
     action = payload["action"]
     data = payload["data"]
+    cur_time = :os.system_time(:millisecond)
+
 
     case action do
       "chat" ->
