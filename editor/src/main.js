@@ -1,6 +1,15 @@
 let canv = document.getElementById("theCanvas");
 let ctx = canv.getContext("2d");
+let chatInput = document.createElement("INPUT");
+this.socket = new WebsocketHandler(); //handles websocket stuff
 
+/*this.socket.send(JSON.stringify({
+    action: "game_action",
+    data: {
+        card_id: "card421",
+        action: "sacrifice"        
+    }
+//}))*/
 //stores all zones to redraw
 let zones = [];
 let cards = [];
@@ -42,6 +51,8 @@ document.addEventListener('keydown', e => {
             currentMode = placingModes.PLAYER;
             redrawEverything();
             break;
+        case 'r':
+            console.log(exportJSON());
     }
 }, false);
 
@@ -363,6 +374,9 @@ function isColliding(zone, card){
     }
 }
 
+//set body of http request to JSON
+//post request
+//reads body
 function exportJSON(){
     let json = '{';
     // add zones
