@@ -15,3 +15,18 @@ body {
     top: 100px;
     left: 100px;
 }
+
+.chat{
+    position: absolute;
+    top: 450px;
+    left: 1000px;
+}
+
+#chatbox{
+    position: absolute;
+    bottom: 505px;
+    left: 980px;
+    overflow: auto;
+    max-height: 200px;
+    max-width: 500px;
+}
