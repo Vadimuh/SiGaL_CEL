@@ -52,6 +52,13 @@ To deploy the site locally, you'll want to use a command line to
 - deploy with `mix run --no-halt`
 - you can access the site by entering localhost:8000 as a URL into the address bar of your browser.
 
+## Server Deployment
+- ssh into the DigitalOcean droplet that is setup (ask Vadim for IP)
+
+### If setting up the server for the first time
+- `git clone https://github.com/Vadim-Pelyushenko/SiGaL_CEL.git`
+- `make deploy` should set everything up correctly
+
 ## How to contribute
 > TODO: This section still needs additional information.
 
